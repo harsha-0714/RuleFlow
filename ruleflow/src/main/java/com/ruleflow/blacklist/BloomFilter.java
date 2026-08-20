@@ -19,18 +19,13 @@ public class BloomFilter {
         this.seed1 = ThreadLocalRandom.current().nextLong();
         this.seed2 = ThreadLocalRandom.current().nextLong();
     }
-
-    /** m = -(n * ln(p)) / (ln(2)^2) — optimal bit array size for target false-positive rate p. */
     private static int optimalBitSize(int n, double p) {
         return (int) Math.ceil(-(n * Math.log(p)) / (Math.log(2) * Math.log(2)));
     }
-
-    /** k = (m/n) * ln(2) — optimal number of hash functions. */
     private static int optimalHashCount(int m, int n) {
         return Math.max(1, (int) Math.round((double) m / n * Math.log(2)));
     }
 
-    /** Adds a value by setting k bits derived from double hashing. */
     public void add(String value) {
         for (int i = 0; i < hashCount; i++) {
             bits.set(indexFor(value, i));
@@ -47,11 +42,6 @@ public class BloomFilter {
         return true;
     }
 
-    /**
-     * Double hashing trick: simulate k independent hash functions from just two
-     * base hashes (h1, h2) via h_i(x) = h1(x) + i*h2(x), avoiding k separate
-     * hash implementations while keeping bit positions well distributed.
-     */
     private int indexFor(String value, int i) {
         long h1 = hash(value, seed1);
         long h2 = hash(value, seed2);
